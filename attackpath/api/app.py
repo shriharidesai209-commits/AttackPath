@@ -5,6 +5,7 @@ import logging
 from typing import Any
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from attackpath.api.routes.graph import router as graph_router
 from attackpath.api.routes.health import router as health_router
@@ -58,6 +59,15 @@ def create_app() -> FastAPI:
       docs_url="/docs",
       redoc_url="/redoc",
       openapi_url="/openapi.json",
+  )
+
+  # CORS configuration for cross-origin frontend requests
+  application.add_middleware(
+      CORSMiddleware,
+      allow_origins=["*"],
+      allow_credentials=True,
+      allow_methods=["*"],
+      allow_headers=["*"],
   )
 
   # Exception Handlers

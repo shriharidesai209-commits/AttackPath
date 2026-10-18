@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: attackpath-api
+    runtime: python
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn attackpath.api.app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: FALKORDB_HOST
+        sync: false
+      - key: FALKORDB_PORT
+        value: "6379"
+      - key: FALKORDB_USERNAME
+        sync: false
+      - key: FALKORDB_PASSWORD
+        sync: false
+      - key: FALKORDB_SSL
+        value: "true"
+      - key: FALKORDB_BASELINE_GRAPH
+        value: attackpath_baseline
+      - key: FALKORDB_TIMEOUT_MS
+        value: "5000"
+      - key: LLM_PROVIDER
+        value: none
