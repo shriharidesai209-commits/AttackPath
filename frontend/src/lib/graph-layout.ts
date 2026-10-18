@@ -9,6 +9,10 @@ export function getLayoutedElements(
   edges: Edge[],
   direction: "LR" | "TB" = "LR"
 ): { nodes: Node[]; edges: Edge[] } {
+  if (!nodes || nodes.length === 0) {
+    return { nodes: [], edges: [] };
+  }
+
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
@@ -30,15 +34,26 @@ export function getLayoutedElements(
 
   dagre.layout(dagreGraph);
 
-  const layoutedNodes: Node[] = nodes.map((node) => {
+  const layoutedNodes: Node[] = nodes.map((node, index) => {
     const nodeWithPosition = dagreGraph.node(node.id);
+    const posX =
+      nodeWithPosition && typeof nodeWithPosition.x === "number"
+        ? nodeWithPosition.x - NODE_WIDTH / 2
+        : index * (NODE_WIDTH + 60);
+    const posY =
+      nodeWithPosition && typeof nodeWithPosition.y === "number"
+        ? nodeWithPosition.y - NODE_HEIGHT / 2
+        : 100;
+
     return {
       ...node,
+      width: NODE_WIDTH,
+      height: NODE_HEIGHT,
       targetPosition: direction === "LR" ? Position.Left : Position.Top,
       sourcePosition: direction === "LR" ? Position.Right : Position.Bottom,
       position: {
-        x: nodeWithPosition.x - NODE_WIDTH / 2,
-        y: nodeWithPosition.y - NODE_HEIGHT / 2,
+        x: posX,
+        y: posY,
       },
     };
   });

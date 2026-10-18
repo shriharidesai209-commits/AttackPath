@@ -465,7 +465,7 @@ export default function InvestigationWorkspacePage() {
           <div className="w-full flex-1 flex flex-col xl:flex-row p-4 gap-4 bg-[#F6F2E9] relative items-start">
             {/* Expanded Canvas Container */}
             <div className="flex-1 w-full flex flex-col relative bg-white rounded-xl border border-[#E3DDD2] shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden xl:sticky xl:top-[128px] h-[calc(100vh-148px)] min-h-[500px]">
-              <div className="flex-1 w-full h-full relative overflow-hidden min-h-[350px]">
+              <div className="flex-1 w-full min-h-[350px] relative overflow-hidden flex flex-col">
                 <AttackGraphCanvas
                   initialNodes={flowNodes}
                   initialEdges={flowEdges}
@@ -486,23 +486,41 @@ export default function InvestigationWorkspacePage() {
 
                 {/* In-Canvas Empty / Informational State */}
                 {!discovering && flowNodes.length === 0 && (
-                  <div className="absolute inset-0 bg-[#FAF7F0]/40 flex flex-col items-center justify-center p-6 text-center z-10 pointer-events-none">
+                  <div className="absolute inset-0 bg-[#FAF7F0]/60 backdrop-blur-xs flex flex-col items-center justify-center p-6 text-center z-10 pointer-events-auto">
                     <div className="p-3 rounded-full bg-white border border-[#E3DDD2] mb-3 shadow-xs text-[#686D6B]">
-                      <Search className="w-5 h-5 text-[#686D6B]" />
+                      {errorMessage ? (
+                        <AlertTriangle className="w-5 h-5 text-[#E85D4A]" />
+                      ) : (
+                        <Search className="w-5 h-5 text-[#686D6B]" />
+                      )}
                     </div>
                     <h3 className="font-sans text-sm font-semibold text-[#282B2A]">
                       {errorMessage
                         ? "Unable to Load Attack Graph"
                         : investigation?.status === "TARGET_UNREACHABLE"
                         ? "Target Unreachable"
+                        : investigation?.paths && investigation.paths.length > 0
+                        ? "Graph Layout Unavailable"
                         : "No Attack Paths Discovered"}
                     </h3>
                     <p className="text-xs text-[#686D6B] max-w-sm mt-1 leading-relaxed">
                       {errorMessage ||
                         (investigation?.status === "TARGET_UNREACHABLE"
                           ? `Zero viable traversal routes connect '${sourceId}' to '${targetId}' within ${maxDepth} hops.`
+                          : investigation?.paths && investigation.paths.length > 0
+                          ? "Discovered paths exist in the data model but could not be mapped to canvas nodes."
                           : "Select a source identity and target data asset in the toolbar above to explore potential attack vectors.")}
                     </p>
+                    <div className="flex items-center gap-2 mt-4">
+                      <button
+                        type="button"
+                        onClick={() => runInvestigation(sourceId, targetId, maxDepth)}
+                        className="px-3 py-1.5 rounded-lg bg-white border border-[#E3DDD2] text-[#282B2A] hover:bg-[#FAF7F0] text-xs font-medium shadow-xs cursor-pointer flex items-center gap-1.5"
+                      >
+                        <Search className="w-3.5 h-3.5 text-[#32877A]" />
+                        <span>Run Discovery</span>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
