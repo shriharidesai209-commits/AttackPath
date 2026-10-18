@@ -202,7 +202,7 @@ export function AppSidebar() {
             </div>
           </div>
           <Link
-            href="/"
+            href="/login"
             onClick={() => {
               if (typeof window !== "undefined") {
                 sessionStorage.removeItem("attackpath_user");
